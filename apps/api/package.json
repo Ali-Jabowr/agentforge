@@ -1,0 +1,22 @@
+{
+  "name": "@agentforge/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.7.10",
+    "@hono/node-server": "^1.14.1",
+    "@agentforge/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3",
+    "tsx": "^4.19.4"
+  }
+}
