@@ -3,7 +3,8 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

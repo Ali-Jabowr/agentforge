@@ -1,5 +1,5 @@
+import 'dotenv/config'
 import { AgentForge } from '@agentforge/sdk'
-
 const apiKey = process.env.AGENTFORGE_API_KEY
 if (!apiKey) throw new Error('AGENTFORGE_API_KEY is required')
 

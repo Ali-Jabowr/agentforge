@@ -1,18 +1,23 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import { requireApiKey } from '../middleware/api-key-auth.js';
+import { db } from '@agentforge/db';
 
-export const tracesRouter = new Hono()
+export const tracesRouter = new Hono();
 
-// POST /v1/traces — create a trace (Phase 1: stub, auth + DB wired in Step 7-8)
-tracesRouter.post('/', async (c) => {
-  const authHeader = c.req.header('Authorization')
+tracesRouter.post('/', requireApiKey, async (c) => {
+    const body = await c.req.json();
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
+    const projectId = c.get('projectId');
+    const apiKeyId = c.get('apiKeyId');
 
-  const body = await c.req.json()
-  // TODO Phase 1 Step 8: validate API key against DB, write Run row
-  console.log('Trace received:', body)
+    const run = await db.run.create({
+      data: {
+        name: body.name,
+        projectId,
+        apiKeyId,
+        status: 'RUNNING',
+      }
+    })
 
-  return c.json({ id: crypto.randomUUID() }, 201)
-})
+    return c.json({ runId: run.id }, 201);
+});
