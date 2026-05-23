@@ -23,7 +23,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       if (v != null) h[k] = Array.isArray(v) ? v.join(', ') : v
       return h
     }, {}),
-    ...(body ? { body } : {}),
+    ...(body ? { body: body as unknown as BodyInit } : {}),
   })
 
   const webRes = await app.fetch(webReq)
