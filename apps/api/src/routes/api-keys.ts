@@ -9,7 +9,6 @@ apiKeysRouter.post('/', requireAuth, async (c) => {
     const { rawKey, keyHash, keyPrefix } = generateApiKey()
 
     const clerkId = c.get('userId') as string
-    console.log('User ID:', clerkId)
     
     const { name } = await c.req.json<{ name: string }>()
 
