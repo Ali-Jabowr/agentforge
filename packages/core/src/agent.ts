@@ -1,5 +1,5 @@
 import { Tool, toolToDefinition } from "./tools.js";
-import { LLMAdapter, Message, ToolUseBlock, TextBlock } from "./llm/types.js";
+import { LLMAdapter, Message, ToolUseBlock, TextBlock, ToolResultBlock } from "./llm/types.js";
 
 
 type AgentConfig = {
@@ -26,6 +26,33 @@ export function createAgent(config: AgentConfig) {
                     messages,
                     tools: config.tools?.map(toolToDefinition)
                 })
+                messages.push({ role: 'assistant', content: response.content}) 
+
+                switch (response.stopReason) {
+                    case 'end_turn':
+                        return response.content
+                            .filter((block): block is TextBlock => block.type === 'text') 
+                            .map(block => block.text)
+                            .join('\n')
+                    
+                    case 'tool_use':{
+                        const toolCalls = response.content
+                                .filter((block): block is ToolUseBlock => block.type === 'tool_use')
+                        
+                        const results: ToolResultBlock[] = []
+                        for(const call of toolCalls){
+                            const tool = toolMap[call.name]
+                            const result = await tool.handler(call.input)
+                            results.push({type: 'tool_result', toolUseId: call.id, content: result})
+                        }
+                        messages.push({role: 'user', content: results})
+                        break
+                    }
+                    case 'max_tokens':
+                        throw new Error('Max tokens reached')
+
+                }
+
             }
             throw new Error('Max iterations reached')
         }
