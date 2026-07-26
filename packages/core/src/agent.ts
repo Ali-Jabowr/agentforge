@@ -42,8 +42,22 @@ export function createAgent(config: AgentConfig) {
                         const results: ToolResultBlock[] = []
                         for(const call of toolCalls){
                             const tool = toolMap[call.name]
-                            const result = await tool.handler(call.input)
-                            results.push({type: 'tool_result', toolUseId: call.id, content: result})
+                            try{
+                                if (!tool){
+                                    throw new Error(`${call.name} there is no such a tool to call!`)
+                                }
+                                const result = await tool.handler(call.input)
+                                results.push({type: 'tool_result', toolUseId: call.id, content: result})
+                            }
+                            catch(err){
+                                const message = err instanceof Error ? err.message : String(err)
+                                results.push({
+                                    type: 'tool_result', 
+                                    toolUseId: call.id,
+                                    content: message,
+                                    isError: true
+                                })
+                            }
                         }
                         messages.push({role: 'user', content: results})
                         break
