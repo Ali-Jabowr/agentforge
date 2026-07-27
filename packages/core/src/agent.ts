@@ -13,7 +13,7 @@ type AgentConfig = {
 
 export function createAgent(config: AgentConfig) {
     const maxIterations = config.maxIterations ?? 10
-    const toolMap = Object.fromEntries(config.tools?.map(t => [t.name, t]) ?? [])
+    const toolMap = Object.fromEntries(config.tools?.map(t => [t.name, t] as const) ?? [])
 
     return {
         async run(input: string): Promise<string> {
